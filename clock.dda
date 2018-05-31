@@ -1,0 +1,119 @@
+; Program template for the LDOI Mark II processor
+; All numbers are hexadecimal
+; Register use:
+; 	R0: 
+; 	R1:
+; 	R2:
+; 	R3: S
+; 	R4: M0
+;	R5: M1
+;	R6: H0
+;	R7: H1
+; Address space:
+;	RAM     : 80 - 9F
+;	IRQE	: C0
+;	IRQF	: C1
+;	TRM1S	: D8
+;   SW_H	: E1
+;	SW_L	: E0
+;	BTNS	: E8
+;   LEDS_H  : F1
+;	LEDS_L	: F0
+;   BCD3	: FB
+;   BCD2	: FA
+;   BCD1	: F9
+;   BCD0	: F8
+; The assembler is not case-sensitive!
+reset: ; a label
+	jmp setup
+	
+isr:
+	; check irq flags
+	ldr  R0, C1
+	andl R0, 04 ; mask tmr irq
+	jz btns_irq
+	call inc_s  ; tmr flag was set
+	reti
+btns_irq:
+	ldr  R0, E8 ; read btns state
+	movr R1, R0 ; backup state
+	andl R0, 04 ; btnL mask
+	jz check_btnR
+	call inc_hh
+	reti
+check_btnR:
+	andl R1, 02 ; btnR mask
+	jz other_button
+	call inc_mm
+other_button:
+	reti
+
+setup:
+	; enable btn en tmr irq
+	movl R0, 05
+	str  C0, R0
+	; enable timer
+	movl R0, 01
+	str  D8, R0
+	
+loop:	; continuously update 7 segment
+	str  FB, R7
+	str  FA, R6
+	str  F9, R5
+	str  F8, R4
+	jmp loop
+
+; increment seconds subroutine
+inc_s:
+; first toggle led
+	ldr  R0, F0
+	xorl R0, 01
+	str  F0, R0
+; now increment
+	addl R3, 01 ; increment R3 (seconds)
+	cmpl R3, 3C ; check if R3 = 60
+	je   s_overflow
+	retc		; no overflow
+s_overflow:
+	movl R3, 00 ; reset seconds
+	call inc_mm ; increment minutes
+	retc
+
+; inc minutes subroutine
+inc_mm:
+	addl R4, 01 ; increment R4 (minutes least-significant digit)
+	cmpl R4, 0A ; check if R4 = 10
+	je   m0_overflow
+	retc		; no overflow
+m0_overflow:
+	movl R4, 00	; reset LS digit
+	addl R5, 01 ; increment R5 (MS digit)
+	cmpl R5, 06 ; check if R5 = 6
+	je   m1_overflow
+	retc        ; no overflow
+m1_overflow:
+	movl R5, 00 ; reset MS digit
+	call inc_hh
+	retc		; end of subroutine
+	
+; inc hours subroutine
+inc_hh:
+	addl R6, 01 ; increment R6 (hours LS digit)
+	cmpl R6, 04 ; check if R6 = 4
+	je   check_h1
+	cmpl R6, 0A ; check if R6 = 10
+	je   h0_overflow
+	retc		; end of subroutine
+h0_overflow: 
+	movl R6, 00 ; reset LS digit
+	addl R7, 01 ; increment MS digit
+	retc		; end of subroutine
+check_h1:
+	cmpl R7, 02 ; check if R6 = 2
+	je h1_overflow
+	retc		; end of subroutine
+h1_overflow:
+	movl R6, 00 ; reset LSB
+	movl R7, 00 ; reset MSB
+	retc		; end of subroutine
+	; end of program
