@@ -98,14 +98,22 @@ def log(message, do_print):
         print(message)
 
 
+def print_usage():
+    print('USAGE: python ddasm.py program_name.dda [vhdl_rom.vhd]')
+    print(' * program_name.dda : File containing the assembly program')
+    print(' * vhdl_rom.vhd     : (optional) File where VHDL description of program ROM is written to.')
+    print('                      If not specified, the file name will be "program_name.vhd".')
+
+
 def get_file_names(argv):
     argc = len(argv)
-    do_print = False
+    do_print = True
 
     fns = {'input_file': '', 'output_file': '', 'template_file': 'ROM_template.vhd'}
     if argc == 1:
         err = 'ERROR: Not enough input arguments (' + str(argc-1) + '). Expecting at least 1.'
         log(err, do_print)
+        print_usage()
         raise ValueError
     elif argc == 2:
         fns['input_file'] = argv[1]
@@ -115,16 +123,21 @@ def get_file_names(argv):
     else:
         err = 'ERROR: Too many input arguments (' + str(argc - 1) + '). Expecting 2 at most.'
         log(err, False)
+        print_usage()
         raise ValueError
 
     if len(fns['output_file']) == 0:
         dot_index = fns['input_file'].find('.')
         if dot_index < 0:
-            log('WARNING: Input file is missing an extension!', True)
+            log('WARNING: Input file name is missing an extension!', True)
             input_file_name = fns['input_file']
         else:
             input_file_name = fns['input_file'][0:dot_index]
         fns['output_file'] = input_file_name + '.vhd'
+    else:
+        dot_index = fns['output_file'].find('.')
+        if dot_index < 0:
+            log('WARNING: Output file name is missing an extension!', True)
 
     msg = ' - input:    ' + fns['input_file'] + '\n'
     msg += ' - output:   ' + fns['output_file'] + '\n'
