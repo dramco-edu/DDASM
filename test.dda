@@ -24,12 +24,18 @@
 ;   BCD1	: F9
 ;   BCD0	: F8
 ; The assembler is not case-sensitive!
+
+; You can also use this syntax to define symbol names
+#define S       R3	; register R3 used for storing 'seconds' value
+#define IRQF    C1	; IRQF points to address C1 (interrupt flags I/O register)
+#define BCD3	FB  ; BCD3 points to address FB
+
 reset: ; a label
-	jmp setup
+	jump setup
 	
 isr:
 	; check irq flags
-	ldr  R0, C1
+	ldr  R0, IRQF
 	andl R0, 04 ; mask tmr irq
 	jz btns_irq
 	call inc_s  ; tmr flag was set
@@ -47,7 +53,7 @@ check_btnR:
 	call inc_mm
 other_button:
 	reti
-
+	
 setup:
 	; enable btn en tmr irq
 	movl R0, 05
@@ -57,7 +63,7 @@ setup:
 	str  D8, R0
 	
 loop:	; continuously update 7 segment
-	str  FB, R7
+	str  BCD3, R7
 	str  FA, R6
 	str  F9, R5
 	str  F8, R4
@@ -70,12 +76,12 @@ inc_s:
 	xorl R0, 01
 	str  F0, R0
 ; now increment
-	addl R3, 01 ; increment R3 (seconds)
-	cmpl R3, 3C ; check if R3 = 60
+	inc S      ; increment R3 (seconds)
+	cmpl S, 3C ; check if R3 = 60
 	je   s_overflow
 	retc		; no overflow
 s_overflow:
-	movl R3, 00 ; reset seconds
+	movl S, 00 ; reset seconds
 	call inc_mm ; increment minutes
 	retc
 

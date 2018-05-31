@@ -174,89 +174,119 @@ def load_program(filename):
             asm = sline[0:scindex].strip()
         else:
             asm = sline
-        # check for label
-        scindex = asm.find(':')
-        if scindex == 0:
-            err = 'ERROR: Semicolon (:) at the start of line.\n'
-            err += '\tline ' + str(line_index+1) + ' -> ' + line
-            err += 'Expecting a label.'
-            log(err, True)
-            raise ValueError
-        if scindex > 0:
-            # we have a label, now we do some checks
-            label = asm[0:scindex].strip()
-            # check if first character is a number
-            if label[0].isdigit():
-                err = 'ERROR: Label can not start with a number.\n'
-                err += '\tline ' + str(line_index+1) + ' -> ' + line.strip()
+        # check for #define
+        if asm.lower().find('#define') >= 0:
+            # check formatting of #define-directive
+            ops = split_instruction(asm.lower())
+            if len(ops) < 3:
+                err = 'ERROR: "#define" is missing arguments'
                 log(err, True)
-                raise ValueError
-            # check if the label contains spaces
-            if (label.find(' ') > 0) or (label.find('\t') > 0):
-                err = 'ERROR: Label can not contain spaces.\n'
-                err += '\tline ' + str(line_index+1) + ' -> ' + line.strip()
+            if len(ops) > 3:
+                err = 'ERROR: Too much arguments with "#define"'
                 log(err, True)
-                raise ValueError
-            # check if the label is already defined
-            defined_labels = pinfo['labels'].keys()
-            if label in defined_labels:
-                err = 'ERROR: Label "' + label + '" already defined.\n'
-                err += '\tline ' + str(line_index+1) + ' -> ' + line.strip()
+            if ops[0] != '#define':
+                err = 'ERROR: Found something before #define. Check your code!'
+                log(err, True)
+            symbol = ops[1]
+            value = ops[2]
+            if symbol[0].isdigit():
+                err = 'ERROR: Symbol name can not start with a number'
+                log(err, True)
+            # check if symbol is already defined
+            defined_symbols = pinfo['symbols'].keys()
+            if symbol in defined_symbols:
+                err = 'ERROR: Symbol name "' + symbol + '" already defined.\n'
+                err += '\tline ' + str(line_index + 1) + ' -> ' + line.strip()
                 log(err, True)
                 raise ValueError
             else:
-                # add label to list
-                pinfo['labels'][label] = '%02x' % address
-                # now we do some further checking
-                if 'reset' in defined_labels:
-                    if pinfo['labels']['reset'] != '00':
-                        err = 'ERROR: Label "reset" should have address "00".\n'
-                        err += '\tline ' + str(line_index+1) + ' -> ' + line.strip()
-                        log(err, True)
-                        raise ValueError
-                if 'isr' in defined_labels:
-                    if pinfo['labels']['isr'] != '02':
-                        err = 'ERROR: Label "isr" should have address "02".\n'
-                        err += '\tline ' + str(line_index+1) + ' -> ' + line.strip()
-                        log(err, True)
-                        raise ValueError
+                # if not, add it to the list
+                pinfo['symbols'][symbol] = value
+            # no need to further analyse this line, go to next
+        else:
+            # check for label
+            scindex = asm.find(':')
+            if scindex == 0:
+                err = 'ERROR: Semicolon (:) at the start of line.\n'
+                err += '\tline ' + str(line_index+1) + ' -> ' + line
+                err += 'Expecting a label.'
+                log(err, True)
+                raise ValueError
+            if scindex > 0:
+                # we have a label, now we do some checks
+                label = asm[0:scindex].strip()
+                # check if first character is a number
+                if label[0].isdigit():
+                    err = 'ERROR: Label can not start with a number.\n'
+                    err += '\tline ' + str(line_index+1) + ' -> ' + line.strip()
+                    log(err, True)
+                    raise ValueError
+                # check if the label contains spaces
+                if (label.find(' ') > 0) or (label.find('\t') > 0):
+                    err = 'ERROR: Label can not contain spaces.\n'
+                    err += '\tline ' + str(line_index+1) + ' -> ' + line.strip()
+                    log(err, True)
+                    raise ValueError
+                # check if the label is already defined
+                defined_labels = pinfo['labels'].keys()
+                if label in defined_labels:
+                    err = 'ERROR: Label "' + label + '" already defined.\n'
+                    err += '\tline ' + str(line_index+1) + ' -> ' + line.strip()
+                    log(err, True)
+                    raise ValueError
+                else:
+                    # add label to list
+                    pinfo['labels'][label] = '%02x' % address
+                    # now we do some further checking
+                    if 'reset' in defined_labels:
+                        if pinfo['labels']['reset'] != '00':
+                            err = 'ERROR: Label "reset" should have address "00".\n'
+                            err += '\tline ' + str(line_index+1) + ' -> ' + line.strip()
+                            log(err, True)
+                            raise ValueError
+                    if 'isr' in defined_labels:
+                        if pinfo['labels']['isr'] != '02':
+                            err = 'ERROR: Label "isr" should have address "02".\n'
+                            err += '\tline ' + str(line_index+1) + ' -> ' + line.strip()
+                            log(err, True)
+                            raise ValueError
 
-            # in case that an instruction follows the label
-            asm = asm[scindex:].replace(':', ' ').strip()
+                # in case that an instruction follows the label
+                asm = asm[scindex:].replace(':', ' ').strip()
 
-        vhdl_comment = ' -- ' + asm + '\n'
+            vhdl_comment = ' -- ' + asm + '\n'
 
-        ins = None
-        op_1 = None
-        op_2 = None
-        # parse instruction
-        ops = split_instruction(asm)
-        if len(ops) > 0:
-            is_instruction = True
-            ins = ops[0]
-            if len(ops) > 1:
-                op_1 = ops[1]
-                if len(ops) > 2:
-                    op_2 = ops[2]
-                    if len(ops) > 3:
-                        err = 'ERROR: Wrong instruction format.\n'
-                        err += '\tline ' + str(line_index + 1) + ' -> ' + line.strip()
-                        log(err, True)
-                        raise ValueError
+            ins = None
+            op_1 = None
+            op_2 = None
+            # parse instruction
+            ops = split_instruction(asm)
+            if len(ops) > 0:
+                is_instruction = True
+                ins = ops[0]
+                if len(ops) > 1:
+                    op_1 = ops[1]
+                    if len(ops) > 2:
+                        op_2 = ops[2]
+                        if len(ops) > 3:
+                            err = 'ERROR: Wrong instruction format.\n'
+                            err += '\tline ' + str(line_index + 1) + ' -> ' + line.strip()
+                            log(err, True)
+                            raise ValueError
 
-            # check for virtual instruction and if so do replacement
-            if ins in asminfo['virtual_instructions']:
-                op_2 = asminfo['virtual_instructions'][ins]['operand_2']
-                ins = asminfo['virtual_instructions'][ins]['replace_with']
+                # check for virtual instruction and if so do replacement
+                if ins in asminfo['virtual_instructions']:
+                    op_2 = asminfo['virtual_instructions'][ins]['operand_2']
+                    ins = asminfo['virtual_instructions'][ins]['replace_with']
 
-        # update program info (and set next instruction address)
-        if is_instruction:
-            pinfo['program'][line_index] = {'address': address,
-                                            'instruction': ins,
-                                            'operand_1': op_1,
-                                            'operand_2': op_2,
-                                            'comment': vhdl_comment}
-            address = address + 2
+            # update program info (and set next instruction address)
+            if is_instruction:
+                pinfo['program'][line_index] = {'address': address,
+                                                'instruction': ins,
+                                                'operand_1': op_1,
+                                                'operand_2': op_2,
+                                                'comment': vhdl_comment}
+                address = address + 2
 
         # process next line
         line_index = line_index + 1
@@ -265,11 +295,12 @@ def load_program(filename):
     log('- Labels defined in ' + filename + ':', do_print)
     labels_table = format_symbols_table(pinfo['labels'], 'label', 'address (hex)')
     log(labels_table, do_print)
-    # TODO: log other symbols
-    log('- Variables defined in ' + filename + ':', do_print)
-    symbols_table = format_symbols_table(pinfo['symbols'], 'variables', 'register')
+    # Log a list of the symbols that are defined in the program
+    log('- Symbols defined in ' + filename + ':', do_print)
+    symbols_table = format_symbols_table(pinfo['symbols'], 'symbols', 'value')
     log(symbols_table, do_print)
 
+    # Update program size
     pinfo['size'] = address - 2
     msg = ' - Program size: ' + str(pinfo['size']) + ' bytes.\n\nAnalysis complete.\n\n'
     log(msg, True)
@@ -376,7 +407,7 @@ def generate_rom_file(pinfo, rom, filename):
                 raise ValueError
 
             # lookup address in case label is used
-            address = lookup_name(instruction_info['operand_1'], pinfo['labels'])
+            address = lookup_name(instruction_info['operand_1'], pinfo)
             if address is None:
                 err = 'ERROR: Name "' + instruction_info['operand_1'] + '" is not defined (line ' + str(line+1) + ').'
                 log(err, True)
@@ -402,8 +433,15 @@ def generate_rom_file(pinfo, rom, filename):
 
         elif instruction_type == 'single_register':
             # get destination/source register code
+            if instruction_info['operand_1'] is None:
+                err = 'ERROR: Source/destination register not defined for instruction "'\
+                      + instruction_info['instruction'] + '" (line ' + str(line+1) + ').'
+                log(err, True)
+                raise ValueError
+            # look-up symbol
+            operand_1 = lookup_name(instruction_info['operand_1'], pinfo)
             try:
-                rds_code = asminfo['registers'][instruction_info['operand_1']]
+                rds_code = asminfo['registers'][operand_1]
             except KeyError:
                 err = 'ERROR: Wrong register name "' + instruction_info['operand_1'] + '" (line ' + str(line+1) + ').'
                 log(err, True)
@@ -417,15 +455,29 @@ def generate_rom_file(pinfo, rom, filename):
 
         elif instruction_type == 'register_to_register':
             # get destination register code
+            if instruction_info['operand_1'] is None:
+                err = 'ERROR: Destination register not defined for instruction "'\
+                      + instruction_info['instruction'] + '" (line ' + str(line+1) + ').'
+                log(err, True)
+                raise ValueError
+            # look-up symbol
+            operand_1 = lookup_name(instruction_info['operand_1'], pinfo)
             try:
-                rd_code = asminfo['registers'][instruction_info['operand_1']]
+                rd_code = asminfo['registers'][operand_1]
             except KeyError:
                 err = 'ERROR: Wrong register name "' + instruction_info['operand_1'] + '" (line ' + str(line+1) + ').'
                 log(err, True)
                 raise ValueError
             # get source register code
+            if instruction_info['operand_2'] is None:
+                err = 'ERROR: Source register not defined for instruction "'\
+                      + instruction_info['instruction'] + '" (line ' + str(line+1) + ').'
+                log(err, True)
+                raise ValueError
+            # look-up symbol
+            operand_2 = lookup_name(instruction_info['operand_2'], pinfo)
             try:
-                rs_code = asminfo['registers'][instruction_info['operand_2']]
+                rs_code = asminfo['registers'][operand_2]
             except KeyError:
                 err = 'ERROR: Wrong register name "' + instruction_info['operand_2'] + '" (line ' + str(line+1) + ').'
                 log(err, True)
@@ -445,7 +497,16 @@ def generate_rom_file(pinfo, rom, filename):
                       + '" (line ' + str(line+1) + ').'
                 log(err, True)
                 raise ValueError
-            # TODO: replace with lookup
+            # look-up symbol
+            operand_1 = lookup_name(instruction_info['operand_1'], pinfo)
+            if operand_1 is None:
+                err = 'ERROR: Target address name "' + operand_1 + '" unspecified for instruction "'\
+                      + instruction_info['instruction'] + '" (line ' + str(line+1) + ').'
+                log(err, True)
+                raise ValueError
+            else:
+                instruction_info['operand_1'] = operand_1
+            # make sure the address has the correct length
             if len(instruction_info['operand_1']) > 2:
                 err = 'ERROR: Target address "' + instruction_info['operand_1'] + '" is too long (line '\
                       + str(line+1) + ').'
@@ -461,8 +522,15 @@ def generate_rom_file(pinfo, rom, filename):
                 raise ValueError
 
             # get source register code
+            if instruction_info['operand_2'] is None:
+                err = 'ERROR: Source register not defined for instruction "'\
+                      + instruction_info['instruction'] + '" (line ' + str(line+1) + ').'
+                log(err, True)
+                raise ValueError
+            # look-up symbol
+            operand_2 = lookup_name(instruction_info['operand_2'], pinfo)
             try:
-                rs_code = asminfo['registers'][instruction_info['operand_2']]
+                rs_code = asminfo['registers'][operand_2]
             except KeyError:
                 err = 'ERROR: Wrong register name "' + instruction_info['operand_2'] + '" (line ' + str(line+1) + ').'
                 log(err, True)
@@ -476,20 +544,37 @@ def generate_rom_file(pinfo, rom, filename):
 
         elif instruction_type == 'x_to_register':
             # get destination register code
+            if instruction_info['operand_1'] is None:
+                err = 'ERROR: Destination register not defined for instruction "'\
+                      + instruction_info['instruction'] + '" (line ' + str(line+1) + ').'
+                log(err, True)
+                raise ValueError
+            # look-up symbol
+            operand_1 = lookup_name(instruction_info['operand_1'], pinfo)
             try:
-                rd_code = asminfo['registers'][instruction_info['operand_1']]
+                rd_code = asminfo['registers'][operand_1]
             except KeyError:
                 err = 'ERROR: Wrong register name "' + instruction_info['operand_1'] + '" (line ' + str(line+1) + ').'
                 log(err, True)
                 raise ValueError
 
             # get memory address or literal
-            # check if 0 < length <= 2
+            # check if operand_2 is present
             if instruction_info['operand_2'] is None:
                 err = 'ERROR: Literal or memory location unspecified for instruction "'\
                       + instruction_info['instruction'] + '" (line ' + str(line + 1) + ').'
                 log(err, True)
                 raise ValueError
+            # look-up symbol
+            operand_2 = lookup_name(instruction_info['operand_2'], pinfo)
+            if operand_2 is None:
+                err = 'ERROR: Target address name "' + operand_2 + '" unspecified for instruction "'\
+                      + instruction_info['instruction'] + '" (line ' + str(line+1) + ').'
+                log(err, True)
+                raise ValueError
+            else:
+                instruction_info['operand_2'] = operand_2
+            # check length
             if len(instruction_info['operand_2']) > 2:
                 err = 'ERROR: Literal or memory location "' + instruction_info['operand_2'] + '" is too long (line '\
                       + str(line + 1) + ').'
@@ -547,14 +632,18 @@ def split_instruction(ins):
     return splitins
 
 
-def lookup_name(name, labels):
-    if is_hex(name):
+def lookup_name(name, pinfo):
+    if is_defined(name, asminfo['registers']):
         return name
 
-    if is_label(name, labels):
-        return labels[name]
+    if is_defined(name, pinfo['labels']):
+        return pinfo['labels'][name]
 
-    # TODO: expand to look-up variables and symbols
+    if is_defined(name, pinfo['symbols']):
+        return pinfo['symbols'][name]
+
+    if is_hex(name):    # should be last to avoid early return on names that can be interpreted as hex (eg: BCD)
+        return name
 
     return None
 
@@ -603,9 +692,9 @@ def is_hex(s):
         return False
 
 
-def is_label(s, labels):
+def is_defined(s, table):
     try:
-        labels[s]   # Exploiting possible KeyError
+        table[s]   # Exploiting possible KeyError
         return True
     except KeyError:
         return False
