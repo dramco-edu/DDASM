@@ -8,17 +8,6 @@
 
 Make sure ROM\_template.vhd and asminfo.py are placed in the same directory.
 
-The [documentation]() directory contains information about the instruction set.
-dda.lang contains highlighting for gedit
-Copy to /usr/share/gtksourceview-3.0/language-specs/ (on ubuntu)
-
 ## DDASM documentation
-DDASM (Digital Design Assembly) is the assembly language supported by the DDASM processor used in the KU Leuven [Digital Design Lab Course](https://onderwijsaanbod.kuleuven.be/syllabi/n/JPI228N.htm#activetab=doelstellingen_idp827408).
-The Silicon Simplicity Studio is advised as the IDE for the node.
-See the installation procedures [here](https://www.silabs.com/products/development-tools/software/simplicity-studio).
-
-## Configuring your node
- You can change and configure the activation procedure of your node by changing the `./my_lora_device.h` file.
-
-## Message Structure
-Currently, the node uses the [LPP format](https://github.com/myDevicesIoT/cayenne-docs/blob/master/docs/LORA.md). 
+DDASM (Digital Design Assembly) is the assembly language supported by the DDASM processor used in the KU Leuven [Digital Design Lab Course](https://onderwijsaanbod.kuleuven.be/syllabi/n/JPI228N.htm#activetab=doelstellingen_idp827408). The [documentation](https://github.com/DRAMCO/DDASM/tree/master/documentation) directory contains information about the instruction set and instruction formatting.
+Syntax highlighting (currently, only for gedit), can be found in the [syntax-highlighting](https://github.com/DRAMCO/DDASM/tree/master/syntax_highlighting) directory.
