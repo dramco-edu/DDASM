@@ -98,6 +98,12 @@
 		<keyword>cmpl</keyword>
 		<keyword>cmpr</keyword>
 
+		<!-- "Virtual" Instructions -->
+		<keyword>jump</keyword>
+		<keyword>inc</keyword>
+		<keyword>dec</keyword>
+		<keyword>clr</keyword>
+	
 	</keyword-list>
 
 	<pattern-item _name = "Hex Number" style = "Base-N Integer">

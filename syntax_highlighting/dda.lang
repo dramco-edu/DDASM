@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- language highlighting for gedit -->
+<!-- For ubuntu: copy to /usr/share/gtksourceview-3.0/language-specs/ -->
+<!DOCTYPE language SYSTEM "language.dtd">
+<language _name="Assembler (Intel)" version="1.0" _section="Sources" globs="*.dda" mimetypes="text/x-asm;text/x-assembler">
+	
+	<escape-char>\</escape-char>
+
+	<line-comment _name = "Line Comment" style= "Comment">
+		<start-regex>@|;</start-regex>
+	</line-comment>
+
+	<block-comment _name = "Block Comment" style = "Comment">
+		<start-regex>/\*</start-regex>
+        	<end-regex>\*/</end-regex>
+	</block-comment>
+
+	<string _name = "NASM Identifiers" style = "Keyword" end-at-line-end = "TRUE">
+		<start-regex>\[</start-regex>
+		<end-regex>\]</end-regex>
+	</string>
+
+	<pattern-item _name = "Operators" style = "Keyword">
+		<regex>[-.,:\+\*\/\(\)\{\}\[]|]</regex>
+	</pattern-item>
+
+	<pattern-item _name = "Label" style = "Preprocessor">
+		<regex>^[A-Za-z_][A-Za-z_0-9]*\:</regex>
+	</pattern-item>
+
+	<pattern-item _name = "Local Label" style = "Preprocessor">
+		<regex>.[A-Za-z_0-9]*:</regex>
+	</pattern-item>
+
+	<string _name = "String" style = "String" end-at-line-end = "TRUE">
+		<start-regex>&quot;</start-regex>
+		<end-regex>&quot;</end-regex>
+	</string>
+
+	<keyword-list _name = "Directives" style = "Keyword" case-sensitive="FALSE"
+		match-empty-string-at-beginning = "TRUE"
+		match-empty-string-at-end = "TRUE">
+		<keyword>#define</keyword>
+	</keyword-list>
+
+	<keyword-list _name = "Registers" style = "Data Type" case-sensitive="FALSE"
+		match-empty-string-at-beginning = "TRUE"
+		match-empty-string-at-end = "TRUE">
+		
+		<!-- LDOI_MarkII_v2 -->
+		<keyword>r0</keyword>
+		<keyword>r1</keyword>
+		<keyword>r2</keyword>
+		<keyword>r3</keyword>
+		<keyword>r4</keyword>
+		<keyword>r5</keyword>
+		<keyword>r6</keyword>
+		<keyword>r7</keyword>
+
+	</keyword-list>
+
+	<keyword-list _name = "Instructions" style = "Keyword" case-sensitive="FALSE"
+		match-empty-string-at-beginning = "TRUE"
+		match-empty-string-at-end = "TRUE">
+		
+		<!-- LDOI_MarkII_v2 -->
+		<keyword>nop</keyword>
+		<keyword>reti</keyword>
+		<keyword>retc</keyword>
+		<keyword>call</keyword>
+		<keyword>jmp</keyword>
+		<keyword>jz</keyword>
+		<keyword>jc</keyword>
+		<keyword>je</keyword>
+		<keyword>jg</keyword>
+		<keyword>js</keyword>
+
+		<keyword>movl</keyword>
+		<keyword>movr</keyword>
+		<keyword>ldr</keyword>
+		<keyword>str</keyword>
+		<keyword>push</keyword>
+		<keyword>pop</keyword>
+
+		<keyword>not</keyword>
+		<keyword>rr</keyword>
+		<keyword>rl</keyword>
+		<keyword>swap</keyword>
+
+		<keyword>andl</keyword>
+		<keyword>andr</keyword>
+		<keyword>orl</keyword>
+		<keyword>orr</keyword>
+		<keyword>xorl</keyword>
+		<keyword>xorr</keyword>
+		<keyword>addl</keyword>
+		<keyword>addr</keyword>
+		<keyword>subl</keyword>
+		<keyword>subr</keyword>
+		<keyword>cmpl</keyword>
+		<keyword>cmpr</keyword>
+
+		<!-- "Virtual" Instructions -->
+		<keyword>jump</keyword>
+		<keyword>inc</keyword>
+		<keyword>dec</keyword>
+		<keyword>clr</keyword>
+	
+	</keyword-list>
+
+	<pattern-item _name = "Hex Number" style = "Base-N Integer">
+		<regex>\b0[xX][0-9a-fA-F]+([Uu]([Ll]|LL|ll)?|([Ll]|LL|ll)[Uu]?)?\b</regex>
+	</pattern-item>
+
+</language>
+
