@@ -458,6 +458,31 @@ def generate_rom_file(pinfo, rom, filename):
         if instruction_type == 'jump':
             # get memory address
             if instruction_info['operand_1'] is None:
+                err = 'ERROR: Jump address not defined for instruction "' + instruction_info['instruction'] \
+                      + '" (line ' + str(line + 1) + ').'
+                log(err, True)
+                raise ValueError
+
+            # lookup address in case label is used
+            address = lookup_name(instruction_info['operand_1'], pinfo)
+            if address is None:
+                err = 'ERROR: Name "' + instruction_info['operand_1'] + '" is not defined (line ' + str(line + 1) + ').'
+                log(err, True)
+                raise ValueError
+
+            # convert hex address to binary representation
+            memory_address = address_hex_to_binary(address)
+
+            # assemble jump instruction
+            rom_line += instruction_opcode + '000",' + instruction_info['comment']
+            if instruction_info['address'] == (rom['program_space'] - 2):
+                rom_line += vhdl_fixed_start(instruction_info['address'] + 1) + memory_address + '"\n'
+            else:
+                rom_line += vhdl_fixed_start(instruction_info['address'] + 1) + memory_address + '",\n'
+
+        elif instruction_type == 'jump_conditional':
+            # get memory address
+            if instruction_info['operand_1'] is None:
                 err = 'ERROR: Jump address not defined for instruction "' + instruction_info['instruction']\
                       + '" (line ' + str(line+1) + ').'
                 log(err, True)
@@ -473,8 +498,11 @@ def generate_rom_file(pinfo, rom, filename):
             # convert hex address to binary representation
             memory_address = address_hex_to_binary(address)
 
+            # look up conditional flag
+            conditional_flag = asminfo['instructions'][instruction_info['instruction']]['flag']
+
             # assemble jump instruction
-            rom_line += instruction_opcode + '000",' + instruction_info['comment']
+            rom_line += instruction_opcode + conditional_flag + '",' + instruction_info['comment']
             if instruction_info['address'] == (rom['program_space'] - 2):
                 rom_line += vhdl_fixed_start(instruction_info['address'] + 1) + memory_address + '"\n'
             else:
