@@ -22,23 +22,28 @@ asminfo = {
         },
         'jz': {
             'opcode': '00101',
-            'type': 'jump'
+            'type': 'jump_conditional',
+            'flag': '000'
         },
         'jc': {
-            'opcode': '00110',
-            'type': 'jump'
+            'opcode': '00101',
+            'type': 'jump_conditional',
+            'flag': '001'
         },
         'je': {
-            'opcode': '00111',
-            'type': 'jump'
+            'opcode': '00101',
+            'type': 'jump_conditional',
+            'flag': '010'
         },
         'jg': {
-            'opcode': '01000',
-            'type': 'jump'
+            'opcode': '00101',
+            'type': 'jump_conditional',
+            'flag': '011'
         },
         'js': {
-            'opcode': '01001',
-            'type': 'jump'
+            'opcode': '00101',
+            'type': 'jump_conditional',
+            'flag': '100'
         },
         'push': {
             'opcode': '01110',
@@ -127,6 +132,14 @@ asminfo = {
         'cmpl': {
             'opcode': '11110',
             'type': 'x_to_register'
+        },
+        'ldrr': {
+            'opcode': '00110',
+            'type': 'indirect_memory'
+        },
+        'strr': {
+            'opcode': '00111',
+            'type': 'indirect_memory'
         }
     },
     'virtual_instructions': {

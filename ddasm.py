@@ -1,3 +1,10 @@
+"""
+This is the main program file for the DDASM assembler. It will read a DDA program file and convert it to a VHDL \
+description of a ROM file. This ROM file serves as the program memory for the LDD mark II processor.
+DDASM = Digital Design Assmebly
+LDD = Lab Digital Design
+Digital Design refers to the Digital Design courses of the Faculty Engineering Technology - KU Leuven, Ghent
+"""
 import sys
 import logging
 from asminfo import asminfo
@@ -7,6 +14,15 @@ log_file = None
 
 
 def main(argv):
+    """
+    This function executes the necessary steps for assembling the program ROM.
+        1) loading (and analysing) a program
+        2) loading a ROM template file
+        3) generating the ROM and writing to a VHDL file
+
+    :param argv: The list of command line arguments passed to this script.
+    :return: The script returns exit code 0 on success; -1 otherwise.
+    """
     global log_file
 
     try:
@@ -89,6 +105,13 @@ def main(argv):
 
 
 def log(message, do_print):
+    """
+    Log a message to the build log and print in the console (optionally).
+
+    :param message: String containing the log message.
+    :param do_print: Setting do_print to True will also display de logged message in the console.
+    :return: Nothing
+    """
     global log_file
 
     log_file.write(message)
@@ -99,6 +122,11 @@ def log(message, do_print):
 
 
 def print_usage():
+    """
+    Print an informational message on how to use the DDASM assembler.
+
+    :return: Nothing
+    """
     print('USAGE: python ddasm.py program_name.dda [vhdl_rom.vhd]')
     print(' * program_name.dda : File containing the assembly program')
     print(' * vhdl_rom.vhd     : (optional) File where VHDL description of program ROM is written to.')
@@ -106,6 +134,13 @@ def print_usage():
 
 
 def get_file_names(argv):
+    """
+    Analyse the list of arguments to determine which files should be loaded.
+
+    :param argv: This is the list of arguments passed with the "main" script. The first item in the list, argv[0], \
+                 the name of the script.
+    :return: a dictionary containing the name of the 'input_file', 'output_file' and the 'template_file'
+    """
     argc = len(argv)
     do_print = True
 
@@ -148,6 +183,12 @@ def get_file_names(argv):
 
 
 def load_program(filename):
+    """
+    Load and analyse the DDASM program.
+
+    :param filename: Specifies the name of the file that contains the program.
+    :return: A dictionary containing information of the analysed program.
+    """
     do_print = False
     # load the program
     try:
@@ -158,7 +199,7 @@ def load_program(filename):
         log(err, True)
         raise IOError
 
-    log('Analyzing program...', True)
+    log('Analysing program...', True)
 
     # analyse text
     line_index = 0
@@ -301,7 +342,7 @@ def load_program(filename):
     log(symbols_table, do_print)
 
     # Update program size
-    pinfo['size'] = address - 2
+    pinfo['size'] = address
     msg = ' - Program size: ' + str(pinfo['size']) + ' bytes.\n\nAnalysis complete.\n\n'
     log(msg, True)
 
@@ -309,8 +350,16 @@ def load_program(filename):
 
 
 def load_template(filename):
+    """
+    Load the template of the program ROM.
+
+    :param filename: The program ROM template file name.
+    :return: A dictionary with program ROM structure and memory size
+    """
+    # TODO: complete docstring and add inclusion of "program name" to ROM template file
+
     dt = datetime.now()
-    datestr = dt.strftime('-- Create Date: %H:%M:%S %d-%m-%Y\r\n')
+    datestr = dt.strftime('-- Create Date:    %H:%M:%S %d-%m-%Y\r\n')
     # print(datestr)
     tinfo = {'first_part': list(), 'last_part': list(), 'program_space': None}
 
@@ -359,6 +408,14 @@ def load_template(filename):
 
 
 def generate_rom_file(pinfo, rom, filename):
+    """
+    Generate program ROM file in VHDL containing the instructions of the assembled program
+
+    :param pinfo: A dictionary containing the analyzed program (provided by load_program(...) ).
+    :param rom: A dictionary containing the prorgam ROM structure (provided by load_template(...) )
+    :param filename: The file name of the VHDL file.
+    :return: Nothing
+    """
     do_print = False
     log('Generating ROM memory file...', True)
 
@@ -622,17 +679,36 @@ def generate_rom_file(pinfo, rom, filename):
 
 
 def vhdl_fixed_start(address):
+    """
+    Generate the start of a line in the VHDL ROM.
+
+    :param address: address of the ROM line.
+    :return: a string containg the start of the ROM line.
+    """
     rom_start = '\t\t%3d => "' % address
     return rom_start
 
 
 def split_instruction(ins):
+    """
+    Split an assembly instruction into seperate parts.
+
+    :param ins: The assembly line.
+    :return: A list with the parts of the instruction.
+    """
     newins = ins.replace(',', ' ')
     splitins = newins.split()
     return splitins
 
 
 def lookup_name(name, pinfo):
+    """
+    Lookup if a symbol or label name is defined in the program info dictionary.
+
+    :param name: Name to look up.
+    :param pinfo: A dictionary containing the program info.
+    :return: None if the name does not exist, otherwise the name itself.
+    """
     if is_defined(name, asminfo['registers']):
         return name
 
@@ -649,6 +725,12 @@ def lookup_name(name, pinfo):
 
 
 def address_hex_to_binary(address):
+    """
+    Convert a hexadecimal address (string representation) to binary (string representation).
+
+    :param address: The address to convert.
+    :return: The binary address.
+    """
     binary_lookup = {
         '0': '0000',
         '1': '0001',
@@ -685,6 +767,12 @@ def address_hex_to_binary(address):
 
 
 def is_hex(s):
+    """
+    Test if a string is a hexadecimal in string representation.
+
+    :param s: The string to test.
+    :return: True if hexadecimal, False if not.
+    """
     try:
         int(s, 16)
         return True
@@ -693,6 +781,13 @@ def is_hex(s):
 
 
 def is_defined(s, table):
+    """
+    Test if a symbol or label is defined.
+
+    :param s: The symbol to look up.
+    :param table: A dictionary containing the labels and symbols.
+    :return: True if defined, False otherwise.
+    """
     try:
         table[s]   # Exploiting possible KeyError
         return True
@@ -701,6 +796,14 @@ def is_defined(s, table):
 
 
 def format_symbols_table(symbols_list, symbol_name, value='address'):
+    """
+    Print out the table with symbols and labels in a readable format.
+
+    :param symbols_list:
+    :param symbol_name:
+    :param value:
+    :return: Nothing
+    """
     if not bool(symbols_list.keys()):
         msg = '\n\tNo symbols of type "' + symbol_name + '" have been defined.\n'
         return msg
