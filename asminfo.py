@@ -45,6 +45,14 @@ asminfo = {
             'type': 'jump_conditional',
             'flag': '100'
         },
+        'ldrr': {
+            'opcode': '1100',
+            'type': 'indirect_memory'
+        },
+        'strr': {
+            'opcode': '1101',
+            'type': 'indirect_memory'
+        },
         'push': {
             'opcode': '01110',
             'type': 'single_register'
@@ -70,7 +78,7 @@ asminfo = {
             'type': 'single_register'
         },
         'movr': {
-            'opcode': '01011',
+            'opcode': '01001',
             'type': 'register_to_register'
         },
         'andr': {
@@ -98,15 +106,15 @@ asminfo = {
             'type': 'register_to_register'
         },
         'str': {
-            'opcode': '01101',
+            'opcode': '01011',
             'type': 'register_to_memory'
         },
         'ldr': {
-            'opcode': '01100',
+            'opcode': '01010',
             'type': 'x_to_register'
         },
         'movl': {
-            'opcode': '01010',
+            'opcode': '01000',
             'type': 'x_to_register'
         },
         'andl': {
@@ -132,14 +140,6 @@ asminfo = {
         'cmpl': {
             'opcode': '11110',
             'type': 'x_to_register'
-        },
-        'ldrr': {
-            'opcode': '00110',
-            'type': 'indirect_memory'
-        },
-        'strr': {
-            'opcode': '00111',
-            'type': 'indirect_memory'
         }
     },
     'virtual_instructions': {

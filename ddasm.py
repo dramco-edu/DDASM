@@ -538,7 +538,7 @@ def generate_rom_file(pinfo, rom, filename):
             else:
                 rom_line += vhdl_fixed_start(instruction_info['address']+1) + rds_code + '00000",\n'
 
-        elif instruction_type == 'register_to_register':
+        elif instruction_type == 'register_to_register' or instruction_type == 'indirect_memory':
             # get destination register code
             if instruction_info['operand_1'] is None:
                 err = 'ERROR: Destination register not defined for instruction "'\
@@ -585,7 +585,7 @@ def generate_rom_file(pinfo, rom, filename):
             # look-up symbol
             operand_1 = lookup_name(instruction_info['operand_1'], pinfo)
             if operand_1 is None:
-                err = 'ERROR: Target address name "' + operand_1 + '" unspecified for instruction "'\
+                err = 'ERROR: Target address name "' + instruction_info['operand_1'] + '" unspecified for instruction "'\
                       + instruction_info['instruction'] + '" (line ' + str(line+1) + ').'
                 log(err, True)
                 raise ValueError
@@ -653,7 +653,7 @@ def generate_rom_file(pinfo, rom, filename):
             # look-up symbol
             operand_2 = lookup_name(instruction_info['operand_2'], pinfo)
             if operand_2 is None:
-                err = 'ERROR: Target address name "' + operand_2 + '" unspecified for instruction "'\
+                err = 'ERROR: Target address name "' + instruction_info['operand_2'] + '" unspecified for instruction "'\
                       + instruction_info['instruction'] + '" (line ' + str(line+1) + ').'
                 log(err, True)
                 raise ValueError
@@ -680,6 +680,7 @@ def generate_rom_file(pinfo, rom, filename):
                 rom_line += vhdl_fixed_start(instruction_info['address'] + 1) + address_literal + '"\n'
             else:
                 rom_line += vhdl_fixed_start(instruction_info['address'] + 1) + address_literal + '",\n'
+
         else:
             # unsupported instruction type
             err = 'ERROR: Unknown instruction type (' + instruction_type + ').'
