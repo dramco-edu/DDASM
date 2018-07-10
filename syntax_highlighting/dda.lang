@@ -79,6 +79,8 @@
 		<keyword>movr</keyword>
 		<keyword>ldr</keyword>
 		<keyword>str</keyword>
+		<keyword>ldrr</keyword>
+		<keyword>strr</keyword>
 		<keyword>push</keyword>
 		<keyword>pop</keyword>
 
