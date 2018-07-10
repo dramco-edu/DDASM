@@ -46,11 +46,11 @@ asminfo = {
             'flag': '100'
         },
         'ldrr': {
-            'opcode': '1100',
+            'opcode': '01100',
             'type': 'indirect_memory'
         },
         'strr': {
-            'opcode': '1101',
+            'opcode': '01101',
             'type': 'indirect_memory'
         },
         'push': {
