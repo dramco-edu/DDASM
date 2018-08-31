@@ -90,15 +90,15 @@ asminfo = {
             'type': 'register_to_register'
         },
         'xorr': {
-            'opcode': '11011',
+            'opcode': '11001',
             'type': 'register_to_register'
         },
         'addr': {
-            'opcode': '11101',
+            'opcode': '11011',
             'type': 'register_to_register'
         },
         'subr': {
-            'opcode': '',
+            'opcode': '11101',
             'type': 'register_to_register'
         },
         'cmpr': {
@@ -130,7 +130,7 @@ asminfo = {
             'type': 'x_to_register'
         },
         'addl': {
-            'opcode': '10100',
+            'opcode': '11010',
             'type': 'x_to_register'
         },
         'subl': {
