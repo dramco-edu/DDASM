@@ -1,0 +1,57 @@
+; Program for the LDDI Mark II processor
+; All numbers are hexadecimal
+
+; The assembler is not case-sensitive!
+
+; ADDRESS SPACE:
+;   ROM: 00 - 7F (128 bytes)
+;   RAM: 80 - 9F (32 bytes)
+;   I/O: A0 - FF (not all addresses are used currently!)
+;
+; Peripheral addresses:
+;   Interrupt control
+#define IRQE	C0	; interrupt enable
+#define IRQF	C1	; interrupt flags
+;   Timers
+#define TMR1S	D8	; 1 second timer control
+#define T1S_ON	01	; write T1S_ON to TMR1S to start the timer
+#define T1S_OFF 00	; write T1S_OFF to TMR1S to stop the timer
+;   Bi-stable switches
+#define SW_L	E0	; SW 0 - 7
+#define SW_H	E1	; SW 8 - 15
+;   Push buttons
+#define BTNS	E8	; push buttons
+;   LEDs
+#define LEDS_L	F0	; LED 0 - 7
+#define LEDS_H	F1	; LED 8 - 15
+;   7-segment display (lower 4 segments)
+#define BCD0	F8	; Segment 0
+#define BCD1	F9	; Segment 1
+#define BCD2	FA	; Segment 2
+#define BCD3	FB	; Segment 3
+
+; Define other symbols:
+#define LEDVAL, R0	; this is just an example
+
+
+; program start
+reset:	; needs to be the first label
+	jump setup
+	
+; optional interrupt service routine
+isr:	; needs to be the second label (if used)
+	reti	; return from interrupt
+
+; do some initial (one-time-only) setup
+setup:
+	jmp loop
+	
+loop:	; continuously loop through instructions
+	call a_subroutine
+	jmp loop
+
+; an example subroutine
+a_subroutine:
+	retc	; return from subroutine call
+
+	; end of program
