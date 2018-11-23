@@ -71,7 +71,7 @@ def main(argv):
 
     # Read ROM template
     try:
-        rom = load_template(file_names['template_file'])
+        rom = load_template(file_names['template_file'], file_names['output_file'])
     except ValueError or IOError:
         print('FAILURE - check build.log')
         log('FAILURE', False)
@@ -349,17 +349,21 @@ def load_program(filename):
     return pinfo
 
 
-def load_template(filename):
+def load_template(filename, romfilename):
     """
     Load the template of the program ROM.
 
     :param filename: The program ROM template file name.
+    :param romfilename: The file name of the resulting ROM file
     :return: A dictionary with program ROM structure and memory size
     """
-    # TODO: complete docstring and add inclusion of "program name" to ROM template file
-
+    # To put creation date in ROM file
     dt = datetime.now()
-    datestr = dt.strftime('-- Create Date:    %H:%M:%S %d-%m-%Y\r\n')
+    datestr = dt.strftime('--      Created: %H:%M:%S %d-%m-%Y\r\n')
+    
+    # To put filename in ROM file
+    filestr = '--         File: ' + romfilename + '\r\n')
+    
     # print(datestr)
     tinfo = {'first_part': list(), 'last_part': list(), 'program_space': None}
 
@@ -379,8 +383,10 @@ def load_template(filename):
     si = 0
     for line in raw_text:
         if section[si] == 'start':
-            if '-- Create Date' in line:
+            if '--      Created' in line:
                 tinfo['first_part'].append(datestr)
+            elif '--         File' in line:
+                tinfo['first_part'].append(filestr)
             else:
                 tinfo['first_part'].append(line)
                 if '-- program start' in line:
