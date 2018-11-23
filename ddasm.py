@@ -362,7 +362,7 @@ def load_template(filename, romfilename):
     datestr = dt.strftime('--      Created: %H:%M:%S %d-%m-%Y\r\n')
     
     # To put filename in ROM file
-    filestr = '--         File: ' + romfilename + '\r\n')
+    filestr = '--         File: ' + romfilename + '\r\n'
     
     # print(datestr)
     tinfo = {'first_part': list(), 'last_part': list(), 'program_space': None}
