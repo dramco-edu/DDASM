@@ -444,7 +444,7 @@ def generate_rom_file(pinfo, rom, filename):
 
     # Write program to ROM file
     last_address = 0
-    for line in pinfo['program']:
+    for line in sorted(pinfo['program']):
         instruction_info = pinfo['program'][line]
         log(str(instruction_info), do_print)
 
