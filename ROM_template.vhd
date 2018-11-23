@@ -1,22 +1,23 @@
-----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
--- Create Date:    09:05:24 11/23/2010 
--- Design Name: 
--- Module Name:    ROM - Behavioral 
--- Project Name: 
--- Target Devices: 
--- Tool versions: 
--- Description: 
+
+--  ____  ____      _    __  __  ____ ___
+-- |  _ \|  _ \    / \  |  \/  |/ ___/ _ \
+-- | | | | |_) |  / _ \ | |\/| | |  | | | |
+-- | |_| |  _ <  / ___ \| |  | | |__| |_| |
+-- |____/|_| \_\/_/   \_\_|  |_|\____\___/
+--                           research group
+--                             dramco.be/
 --
--- Dependencies: 
+--  KU Leuven - Technology Campus Gent,
+--  Gebroeders De Smetstraat 1,
+--  B-9000 Gent, Belgium
 --
--- Revision: 
--- Revision 0.01 - File Created
--- Additional Comments: 
+--         File: 
+--      Created: 
+--       Author: firstname lastname and other guy/girl/...
 --
-----------------------------------------------------------------------------------
+--  Description: LDD Processor Program ROM
+
+
 
 library ieee;
 use ieee.std_logic_1164.all;
