@@ -7,8 +7,6 @@
 
 Make sure ROM\_template.vhd and asminfo.py are placed in the same directory.
 
-Works only with Python v3.x. Support for 2.7 will not be provided.
-
 ## DDASM documentation
 DDASM (Digital Design Assembly) is the assembly language supported by the DDASM processor used in the lab sessions of the KU Leuven Digital Design course [1](https://onderwijsaanbod.kuleuven.be/syllabi/n/JPI228N.htm#activetab=doelstellingen_idp827408) and [2](https://onderwijsaanbod.kuleuven.be/syllabi/n/JPI0G1N.htm#activetab=doelstellingen_idp2947376). The [documentation](https://github.com/DRAMCO/DDASM/tree/master/documentation) directory contains information about the instruction set and instruction formatting.
 Syntax highlighting (currently, only for gedit), can be found in the [syntax-highlighting](https://github.com/DRAMCO/DDASM/tree/master/syntax_highlighting) directory.
