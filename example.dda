@@ -1,34 +1,34 @@
 ; Program template for the LDOI Mark II processor
 ; All numbers are hexadecimal
 ; Register use:
-; 	R0: 
-; 	R1:
-; 	R2:
-; 	R3: S
-; 	R4: M0
-;	R5: M1
-;	R6: H0
-;	R7: H1
+;   R0: 
+;   R1:
+;   R2:
+;   R3: S
+;   R4: M0
+;   R5: M1
+;   R6: H0
+;   R7: H1
 ; Address space:
-;	RAM     : 80 - 9F
-;	IRQE	: C0
-;	IRQF	: C1
-;	TRM1S	: D8
-;   SW_H	: E1
-;	SW_L	: E0
-;	BTNS	: E8
-;   LEDS_H  : F1
-;	LEDS_L	: F0
-;   BCD3	: FB
-;   BCD2	: FA
-;   BCD1	: F9
-;   BCD0	: F8
+;   RAM    : 80 - 9F
+;   IRQE   : C0
+;   IRQF   : C1
+;   TRM1S  : D8
+;   SW_H   : E1
+;   SW_L   : E0
+;   BTNS   : E8
+;   LEDS_H : F1
+;   LEDS_L : F0
+;   BCD3   : FB
+;   BCD2   : FA
+;   BCD1   : F9
+;   BCD0   : F8
 ; The assembler is not case-sensitive!
 
 ; You can also use this syntax to define symbol names
-#define S       R3	; register R3 used for storing 'seconds' value
-#define IRQF    C1	; IRQF points to address C1 (interrupt flags I/O register)
-#define BCD3	FB  ; BCD3 points to address FB
+#define S       R3    ; register R3 used for storing 'seconds' value
+#define IRQF    C1    ; IRQF points to address C1 (interrupt flags I/O register)
+#define BCD3    FB    ; BCD3 points to address FB
 
 reset: ; a label
 	jump setup
