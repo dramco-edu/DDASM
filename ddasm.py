@@ -433,8 +433,8 @@ def generate_rom_file(pinfo, rom, filename):
 
     # check if memory space has not been succeeded
     if pinfo['size'] > rom['program_space']:
-        err = 'ERROR: Program size (' + pinfo['size'] + ' bytes) exceeds available memory (' \
-              + rom['program_space'] + ' bytes).'
+        err = 'ERROR: Program size (' + str(pinfo['size']) + ' bytes) exceeds available memory (' \
+              + str(rom['program_space']) + ' bytes).'
         log(err, True)
         raise ValueError
 
