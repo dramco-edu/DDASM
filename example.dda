@@ -115,7 +115,7 @@ h0_overflow:
 	addl R7, 01 ; increment MS digit
 	retc		; end of subroutine
 check_h1:
-	cmpl R7, 02 ; check if R6 = 2
+	cmpl R7, 02 ; check if R7 = 2
 	je h1_overflow
 	retc		; end of subroutine
 h1_overflow:
