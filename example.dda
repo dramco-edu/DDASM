@@ -34,8 +34,8 @@ reset: ; a label
 	jump setup
 	
 isr:
-	; check irq flags
-	ldr  R0, IRQF
+	; check irq flags (always do this! - see line below)
+	ldr  R0, IRQF ; reading from IRQF will also clear the flags
 	andl R0, 04 ; mask tmr irq
 	jz btns_irq
 	call inc_s  ; tmr flag was set
