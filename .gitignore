@@ -1,1 +1,4 @@
 *.pyc
+build.log
+empty_program.vhd
+example.vhd
