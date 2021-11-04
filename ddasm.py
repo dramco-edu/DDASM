@@ -760,6 +760,9 @@ def lookup_name(name, pinfo):
 
 
 def address_hex_to_binary(address):
+    if len(address) == 1:
+        address = '0' + address
+        
     """
     Convert a hexadecimal address (string representation) to binary (string representation).
 
