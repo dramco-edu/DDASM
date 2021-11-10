@@ -2,3 +2,4 @@
 build.log
 empty_program.vhd
 example.vhd
+ROM.vhd

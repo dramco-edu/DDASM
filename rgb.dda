@@ -1,0 +1,115 @@
+; Program template for the LDOI Mark II processor
+; All numbers are hexadecimal
+; Register use:
+;   R0: 
+;   R1:
+;   R2:
+;   R3: S
+;   R4: M0
+;   R5: M1
+;   R6: H0
+;   R7: H1
+; Address space:
+;   RAM    : 80 - 9F
+;   IRQE   : C0
+;   IRQF   : C1
+;   RGB_R  : B0
+;   RGB_G  : B1
+;   RGB_B  : B2
+;   TRM1S  : D8
+;   SW_H   : E1
+;   SW_L   : E0
+;   BTNS   : E8
+;   LEDS_H : F1
+;   LEDS_L : F0
+;   BCD3   : FB
+;   BCD2   : FA
+;   BCD1   : F9
+;   BCD0   : F8
+; The assembler is not case-sensitive!
+
+; You can also use this syntax to define symbol names
+#define IRQE    C0		; interrupt enable register memory address
+#define IRQF    C1		; interrupt flags register memory address
+#define TMR_IRQ_MASK  04
+#define BTNS_IRQ_MASK 01
+
+#define RGB_B   D2		; RGB_B PWM output memory address
+#define RGB_G   D1		; RGB_G PWM output memory address
+#define RGB_R   D0		; RGB_R PWM output memory address
+#define RVAL	R2		; GP register for storing current RGB_R value
+#define GVAL	R3		; GP register for storing current RGB_G value
+#define BVAL	R4		; GP register for storing current RGB_B value
+
+#define TRM1S   D8		; 1s timer control register memory address
+#define BTNS    E8		; Buttons input memory address
+
+#define DEL_C	R7
+#define S_DEL_C	R6
+
+reset: ; a label
+	jump setup
+	
+isr:
+	ldr  R0, IRQF ; reading from IRQF will also clear the flags
+	call rotate_rgb_values
+	reti
+	
+setup:
+	; enable tmr1s irq
+	movl R0, TMR_IRQ_MASK
+	str  IRQE, R0
+	; enable timer
+	movl R0, 01
+	str  TRM1S, R0
+	; set RGB start values
+	clr RVAL, 01
+	movl GVAL, 7F
+	movl BVAL, FF
+	; set COUNTER
+	clr DEL_C
+	clr S_DEL_C
+
+loop:	; continuously update 7 segment
+	call update_rgb_values
+	call set_rgb_values
+	call delay
+	jmp loop
+
+; update pwm outputs subroutine (based on rgb values)
+set_rgb_values:
+	str RGB_R, RVAL
+	str RGB_G, GVAL
+	str RGB_B, BVAL
+	retc
+
+; rotate the rgb values
+rotate_rgb_values:
+	movr R0, RVAL
+	movr RVAL, GVAL
+	movr GVAL, BVAL
+	movr BVAL, R0
+	retc
+
+; update rgb values subroutine
+update_rgb_values:
+	addl RVAL, 8
+	subl BVAL, 8
+	retc
+
+small_delay:
+	inc S_DEL_C
+	jz end_small_delay
+	jmp small_delay
+end_small_delay:
+	retc
+
+delay:
+	inc DEL_C
+	jz end_delay
+	call small_delay
+	jmp delay
+end_delay:
+	retc
+
+	; end of program
