@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
+<!--Based on the language defintion shared on: 
+https://wiki.gnome.org/Projects/GtkSourceView/LanguageDefinitions?action=AttachFile&do=view&target=asm-intel.lang
+-->
+<language id="ddasm" name="Assembler (DDASM)" version="2.0" section="Sources">
+	<metadata>
+		<property name="mimetypes">text/x-asm;text/x-assembler</property>
+		<property name="globs">*.dda</property>
+	</metadata>
+
+	<styles>
+		<style id="preprocessor" name="Preprocessor" map-to="def:preprocessor"/>
+		<style id="keyword" name="Keyword" map-to="def:keyword"/>
+		<style id="comment" name="Comment" map-to="def:comment"/>
+		<style id="operator" name="Operator" map-to="def:operator"/>
+		<style id="string" name="String" map-to="def:string"/>
+		<style id="decimal" name="Data Type" map-to="def:decimal"/>
+		<style id="type" name="Data Type" map-to="def:type"/>
+	</styles>
+
+	<default-regex-options case-sensitive="false"/>
+	
+	<definitions>
+		<context id="ddasm">
+			<include>
+				<context id="comment" style-ref="comment">
+					<start>;</start>
+					<end>$</end>
+				</context>
+				<context id="nasm-id" style-ref="keyword">
+					<start>\[</start>
+					<end>\]</end>
+				</context>
+<!--				<context id="operator" style-ref="operator">
+					<match>[-.,:\+\*\/\(\)\{\}\[]|]</match>
+				</context>!-->
+				<context id="label" style-ref="string">
+					<match>^[A-Za-z_][A-Za-z_0-9]*\:</match>
+				</context>
+				<context id="local-label" style-ref="string">
+					<match>.[A-Za-z_0-9]*\:</match>
+				</context>
+				<context id="string" style-ref="preprocessor">
+					<match>\B#\S+\b</match>
+				</context>
+				<context id="decimal" style-ref="decimal">
+					<match>\b([1-9][0-9]*|0)([Uu]([Ll]|LL|ll)?|([Ll]|LL|ll)[Uu]?)?\b</match>
+				</context>
+				<context id="float" style-ref="decimal">
+					<match>\b([0-9]+[Ee][-]?[0-9]+|([0-9]*\.[0-9]+|[0-9]+\.)([Ee][-]?[0-9]+)?)[fFlL]?</match>
+				</context>
+				<context id="hex" style-ref="decimal">
+					<match>\b[0-9a-fA-F]+([Uu])?\b</match>
+				</context>
+				<context id="registers" style-ref="type">
+      	<keyword>R0</keyword>
+	<keyword>R1</keyword>
+	<keyword>R2</keyword>
+	<keyword>R3</keyword>
+	<keyword>R4</keyword>
+	<keyword>R5</keyword>
+	<keyword>R6</keyword>
+	<keyword>R7</keyword>
+				</context>
+				<context id="preprocess" style-ref="preprocessor">
+	<keyword>#define</keyword>
+				</context>
+				<context id="instructions" style-ref="keyword">
+	<keyword>nop</keyword>
+    	<keyword>reti</keyword>
+    	<keyword>retc</keyword>
+    	<keyword>call</keyword>
+    	<keyword>jmp</keyword>
+    	<keyword>jump</keyword>
+    	<keyword>jz</keyword>
+    	<keyword>jc</keyword>
+    	<keyword>je</keyword>
+    	<keyword>jg</keyword>
+    	<keyword>js</keyword>
+    	<keyword>movl</keyword>
+    	<keyword>movr</keyword>
+    	<keyword>str</keyword>
+    	<keyword>ldr</keyword>
+    	<keyword>strr</keyword>
+    	<keyword>ldrr</keyword>
+    	<keyword>push</keyword>
+    	<keyword>pop</keyword>
+    	<keyword>not</keyword>
+    	<keyword>rr</keyword>
+    	<keyword>rl</keyword>
+    	<keyword>swap</keyword>
+    	<keyword>andl</keyword>
+    	<keyword>andr</keyword>
+    	<keyword>orl</keyword>
+    	<keyword>orr</keyword>
+    	<keyword>xorl</keyword>
+    	<keyword>xorr</keyword>
+    	<keyword>addl</keyword>
+    	<keyword>addr</keyword>
+    	<keyword>subl</keyword>
+    	<keyword>subr</keyword>
+    	<keyword>cmpl</keyword>
+    	<keyword>cmpr</keyword>
+    	<keyword>inc</keyword>
+    	<keyword>dec</keyword>
+    	<keyword>clr</keyword>
+			
+				</context>
+			</include>
+		</context>
+	</definitions>
+
+</language>
+
+
