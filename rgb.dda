@@ -41,7 +41,7 @@
 #define GVAL	R3		; GP register for storing current RGB_G value
 #define BVAL	R4		; GP register for storing current RGB_B value
 
-#define TRM1S   D8		; 1s timer control register memory address
+#define TMR1S   D8		; 1s timer control register memory address
 #define BTNS    E8		; Buttons input memory address
 
 #define DEL_C	R7
@@ -51,7 +51,8 @@ reset: ; a label
 	jump setup
 	
 isr:
-	ldr  R0, IRQF ; reading from IRQF will also clear the flags
+	; we get here every second due to the timer interrupt
+	ldr  R0, IRQF ; reading from IRQF will also clear the flags, don't remove
 	call rotate_rgb_values
 	reti
 	
@@ -61,9 +62,9 @@ setup:
 	str  IRQE, R0
 	; enable timer
 	movl R0, 01
-	str  TRM1S, R0
+	str  TMR1S, R0
 	; set RGB start values
-	clr RVAL, 01
+	clr RVAL
 	movl GVAL, 7F
 	movl BVAL, FF
 	; set COUNTER
